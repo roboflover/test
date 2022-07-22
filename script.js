@@ -8,11 +8,12 @@ const uniforms = {
 
 init();
 
-
 function init() {
   scene = new THREE.Scene();
-	camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );	camera.position.z = 25
-  camera.position.x = 0
+	camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );	
+  camera.position.x = 7
+  camera.position.y = 10
+  camera.position.z = 10
   renderer = new THREE.WebGLRenderer( { antialias: true } );
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.setSize( window.innerWidth, window.innerHeight );
@@ -26,10 +27,9 @@ function init() {
 
 (function createSpline(){
   //////////////////
-
   shroom_height = 10;
-  stipe_vSegments = 20;
-  stipe_rSegments = 20;
+  stipe_vSegments = 10;
+  stipe_rSegments = 10;
   stipe_points = [];
   stipe_indices = [];
 
@@ -47,19 +47,16 @@ function init() {
   ], closed=false, curveType='catmullrom' );
 
   const points = stipe_shape.getPoints(50);
-  
   const material = new THREE.LineBasicMaterial({ color : 0xff0000 });
   const geometry = new THREE.BufferGeometry().setFromPoints(points);
-  console.log('points', points);
+  //console.log('points', points);
   const curveObject = new THREE.Line(geometry, material);
   scene.add(curveObject);
 
   var dotMaterial = new THREE.PointsMaterial( { size: 3, sizeAttenuation: false } );
   var dot = new THREE.Points( geometry, dotMaterial );
   scene.add( dot );
-  //console.log('points', points);
-  ///////////
-  // t - относительное положение среза на stipe_shape, от 0 до 1
+
   for (var t = 0; t < 1; t += 1 / stipe_vSegments) {
     // форма среза ножки
     var curve = new THREE.CatmullRomCurve3( [
@@ -69,20 +66,9 @@ function init() {
       new THREE.Vector3( -stipe_radius(Math.PI * 1.5, t), 0, 0 ),
     ], closed=true, curveType='catmullrom', tension=0.75);
     // вычисляем точки на срезе ножки
-    var local_points = curve.getPoints( stipe_rSegments );
-    // добавляем точки к мешу
-    for (var i = 0; i < local_points.length; i++) {
-      var v = local_points[i];
-      stipe_points.push(v.x, v.y, v.z);
-      //console.log(v);
-    }
-    const points2 = curve.getPoints(10);
+    
     }
   })()
-
-// console.log('stipe_points', stipe_points);
-// const geometry = new THREE.BufferGeometry().setFromPoints(stipe_points);
-// console.log(geometry);
 
 const points = []
 points.push(new THREE.Vector3(-5, 0, 0))
@@ -91,17 +77,31 @@ let geometry = new THREE.BufferGeometry().setFromPoints( points )
 let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x888888 }))
 scene.add(line)
 
-// var dotMaterial = new THREE.PointsMaterial( { size: 3, sizeAttenuation: false } );
-// var dot = new THREE.Points( geometry, dotMaterial );
-// scene.add( dot );
+let circleValues = []
+let yValues = []
+let centerX = 0;
+let centerY = 0;
+let radius = 5
+let steps = 20
+
+
+for (var i = 0; i < steps; i++) {
+  let fff = new THREE.Vector3( 
+    (centerX + radius * Math.cos(2 * Math.PI * i / steps)), 
+    (centerY + radius * Math.sin(2 * Math.PI * i / steps)), 
+    0 )
+  circleValues.push(fff)
+  // xValues[i] = (centerX + radius * Math.cos(2 * Math.PI * i / steps));
+  // yValues[i] = (centerY + radius * Math.sin(2 * Math.PI * i / steps));
+}
+console.log(circleValues)
+let geometry2 = new THREE.BufferGeometry().setFromPoints( circleValues )
+let line2 = new THREE.Line(geometry2, new THREE.LineBasicMaterial({ color: 0x888888 }))
+scene.add(line2)
 
 animate(0);
 function animate(dt) {
   requestAnimationFrame( animate ); 
   dt = dt * 0.001;
-
-  //console.log(shaderMatPoint)
-
 	renderer.render( scene, camera );
-
 }
