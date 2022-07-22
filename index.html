@@ -1,89 +1,91 @@
-<div id="world"></div>
-<script id='vertexShader' type='x-shader/x-vertex'>
+<body bgcolor="#000000">
+  <div id="world"></div>
+
+  <script id="fragmentShader" type="x-shader/x-fragment">
+
+        varying vec3 vPosition;
+        varying vec4 vColor;
+
+        uniform vec2 resolution;
+        uniform float time;
+
+        void main(){
+          gl_FragColor = vec4(1., 1., 1., 1.);
+    }
+  </script>
+
+  <script id="vertexShaderLV" type="x-shader/x-vertex">
+
+    uniform float time;
+
+    void main() {
+
+    vec3 newPos = position;
+    newPos.x += cos(time + position.y * 0.5);
+    vec4 mvPosition = modelViewMatrix * vec4(newPos, 1.0);
+    gl_Position = projectionMatrix * mvPosition;
+
+    }
+  </script>
+
+  <script id="vertexShaderLH" type="x-shader/x-vertex">
+
+    uniform float time;
+
+    void main() {
+
+    vec3 newPos = position;
+    newPos.z += sin(time + position.x * 0.5);
+    vec4 mvPosition = modelViewMatrix * vec4(newPos, 1.0);
+    gl_Position = projectionMatrix * mvPosition;
+
+    }
+  </script>
+
+  <script id="vertexShaderP" type="x-shader/x-vertex">
 
     varying vec2 vUv;
     varying vec3 vPosition;
     varying vec4 vColor;
     uniform float time;
-   
+
     void main() {
-       
+
     vec3 newPos = position;
-    newPos.z += sin(time + position.y * 0.5);
-    
+    newPos.z += sin(time + position.x * 0.5);
+
     vec4 mvPosition = modelViewMatrix * vec4(newPos, 1.0);
     gl_PointSize = 10. * (1. / - mvPosition.z) + 8.;
-     
+
     gl_Position = projectionMatrix * mvPosition;
 
     }
-    
-</script>
+  </script>
 
-<script id='vertexShaderLine' type='x-shader/x-vertex'>
+  <script id="fragmentShaderP" type="x-shader/x-fragment">
 
-    varying vec2 vUv;
-    varying vec3 vPosition;
-    varying vec4 vColor;
-    uniform float time;
-   
-    void main() {
-       
-    vec3 newPos = position;
-    newPos.z += sin(time + position.y * 0.5);
-    
-    vec4 mvPosition = modelViewMatrix * vec4(newPos, 1.0);
-    gl_PointSize = 10. * (1. / - mvPosition.z) + 8.;
-     
-    gl_Position = projectionMatrix * mvPosition;
+        varying vec3 vPosition;
+        varying vec2 vUv;
+        varying vec4 vColor;
 
+        uniform vec2 resolution;
+        uniform float time;
+
+        void main(){
+          float radius = .005;
+          float dist = length(gl_PointCoord - vec2(0.5));
+          float alpha = 1. - smoothstep(0.45, 0.5, dist);
+          gl_FragColor = vec4(1., 1., 1., alpha);
     }
-    
-</script>
+  </script>
 
-<script id='fragmentShader' type='x-shader/x-fragment'>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+  <!--<script src="./OrbitControls.js"></script>-->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+  <script src="./script.js"></script>
 
-    varying vec3 vPosition; 
-    varying vec2 vUv;
-    varying vec4 vColor;
-    
-    uniform vec2 resolution;
-    uniform float time;
-    
-    void main(){
-      float radius = .005;
-      float dist = length(gl_PointCoord - vec2(0.5));
-      float alpha = 1. - smoothstep(0.45, 0.5, dist);
-      gl_FragColor = vec4(1., 1., 1., alpha);
-}
-
-</script>
-
-<script id='fragmentShaderLine' type='x-shader/x-fragment'>
-
-    varying vec3 vPosition; 
-    varying vec2 vUv;
-    varying vec4 vColor;
-    
-    uniform vec2 resolution;
-    uniform float time;
-    
-    void main(){
-      float radius = .005;
-      float dist = length(gl_PointCoord - vec2(0.5));
-      float alpha = 1. - smoothstep(0.45, 0.5, dist);
-      gl_FragColor = vec4(1., 1., 1., 1.0);
-}
-
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r123/three.min.js"></script>
-<script src="./OrbitControls.js"></script>
-<script src="./script.js"></script>
-
-<!--
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r123/three.min.js"></script>
-<script src="https://rawgithub.com/mrdoob/three.js/r104/examples/js/utils/BufferGeometryUtils.js"></script>
--->
-
-
+  <!--
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r123/three.min.js"></script>
+    <script src="https://rawgithub.com/mrdoob/three.js/r104/examples/js/utils/BufferGeometryUtils.js"></script>
+    -->
 </body>
