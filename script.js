@@ -25,73 +25,39 @@ function init() {
   group = new THREE.Group();
   scene.add(group);
 }
+class CustomSinCurve extends THREE.Curve {
 
-(function createSpline(){
-  //////////////////
-  shroom_height = 10;
-  stipe_vSegments = 10;
-  stipe_rSegments = 10;
-  stipe_points = [];
-  stipe_indices = [];
+  constructor(scale = 1) {
 
-  function stipe_radius(a, t) {
-    return 1;
+    super();
+
+    this.scale = scale;
+
   }
-  //Create a closed wavey loop
-  stipe_shape = new THREE.CatmullRomCurve3( [
-    new THREE.Vector3( 0, 0, 1 ),
-    new THREE.Vector3( 1, shroom_height * 0.25, 0 ),
-    new THREE.Vector3( 2, shroom_height * 0.5, 0),
-    new THREE.Vector3( 0, shroom_height * 0.75, 0),
-    new THREE.Vector3( 1, shroom_height, 0 ),
-  ], closed=false, curveType='catmullrom' );
 
-  const points = stipe_shape.getPoints(50);
-  const material = new THREE.LineBasicMaterial({ color : 0xff0000 });
-  const geometry = new THREE.BufferGeometry().setFromPoints(points);
-  console.log('point', points);
-  const curveObject = new THREE.Line(geometry, material);
-  scene.add(curveObject);
+  getPoint(t, optionalTarget = new THREE.Vector3()) {
 
-  var dotMaterial = new THREE.PointsMaterial( { size: 3, sizeAttenuation: false } );
-  var dot = new THREE.Points( geometry, dotMaterial );
-  scene.add( dot );
-  /*
-  for (var i = 0; i < points.length; i++) {
-    let radius = i * 0.01;
-    createRings(points[i], radius)
+    const tx = t * 3 - 1.5;
+    const ty = Math.sin(2 * Math.PI * t);
+    const tz = 0;
+
+    return optionalTarget.set(tx, ty, tz).multiplyScalar(this.scale);
+
   }
-  console.log(circleValues.length)
-  */
-})();
 
-function createRings(point, radius){
-  
-  circleValues = []
-  let yValues = []
-  let centerX = point.x;
-  let centerY = point.y;
-  let centerZ = point.z;
-  //let radius = 0.4
-  let steps = 20
-
-  for (var i = 0; i < steps; i++) {
-    let point = new THREE.Vector3( 
-      (centerX + radius * Math.cos(2 * Math.PI * i / steps)), 
-       centerY,
-      (centerZ + radius * Math.sin(2 * Math.PI * i / steps)), )
-    circleValues.push(point)
-  }
-  //console.log(circleValues)
-  let geometry2 = new THREE.BufferGeometry().setFromPoints( circleValues )
-  let line2 = new THREE.Line(geometry2, new THREE.LineBasicMaterial({ color: 0x888888 }))
-  scene.add(line2)
-  
-  var dotMaterial = new THREE.PointsMaterial( { size: 3, sizeAttenuation: false } );
-  var dot = new THREE.Points( geometry2, dotMaterial );
-  scene.add(dot)
-  
 }
+
+const path = new CustomSinCurve(10);
+const geometry = new THREE.TubeGeometry(path, 20, 2, 8, false);
+const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+const mesh = new THREE.Mesh(geometry, material);
+let scaleTube = 0.2
+mesh.scale.set(scaleTube, scaleTube, scaleTube);
+
+let nnn = new THREE.ImprovedNoise().noise(0.5, 0.5, 0.5)
+console.log(nnn)
+
+scene.add(mesh);
 
 animate(0);
 function animate(dt) {
