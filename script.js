@@ -28,98 +28,59 @@ function init() {
 class CustomSinCurve extends THREE.Curve {
 
   constructor(scale = 1) {
-
     super();
-
     this.scale = scale;
-
   }
 
   getPoint(t, optionalTarget = new THREE.Vector3()) {
-
     const tx = t * 3 - 1.5;
-    const ty = Math.sin(2 * Math.PI * t);
+    const ty = 1.0//Math.sin(2 * Math.PI * t);
     const tz = 0;
-
     return optionalTarget.set(tx, ty, tz).multiplyScalar(this.scale);
 
   }
 
 }
-
+const radialSegments = 8;
+const tubularSegments = 20;
+const radius = 2;
 const path = new CustomSinCurve(10);
-const geometry = new THREE.TubeBufferGeometry(path, 20, 2, 8, false);
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+const geometry = new THREE.TubeBufferGeometry(path, tubularSegments, radius, radialSegments, false);
+const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 const mesh = new THREE.Mesh(geometry, material);
 let scaleTube = 0.2;
 mesh.scale.set(scaleTube, scaleTube, scaleTube);
+scene.add(mesh);
 
-let x;
-let y;
-let z = 0;
-let positions  = [];
-let nnn = new THREE.ImprovedNoise().noise(0.5, 0.5, 0.5);
+var normal = new THREE.Vector3();
+var vertex = new THREE.Vector3();
+var P = new THREE.Vector3();
+var normals = [];
+var vertices = [];
+
+for ( i = 0; i <= tubularSegments; i ++ ) {
+  var pointAt = i / tubularSegments;
+  P = path.getPointAt(pointAt, P);
+  //console.log(P);
+  for ( j = 0; j <= radialSegments; j ++ ) {
+    
+  }
+}
+
+
 let ns;
 let nScale = 0.25
 const Noise = new THREE.ImprovedNoise();
-console.log('mesh', mesh)
-let vertices;
 let lengthX = mesh.geometry.attributes.position.array.length
 for(let i = 0; i < lengthX; i++){
   let t = Math.random()*10
   ns = Noise.noise(
     mesh.geometry.attributes.position.array[i + 0] * nScale, 
-    mesh.geometry.attributes.position.array[i + 1]  * nScale, 
+    mesh.geometry.attributes.position.array[i + 1] * nScale, 
     t);
-  // x = mesh.geometry.attributes.position.array[i + 0]
-  // y = mesh.geometry.attributes.position.array[i + 1]
-  // z = mesh.geometry.attributes.position.array[i + 2]
-  //let {x, y, z} = mesh.geometry.attributes.position.array[i];
-  //positions .push(x, y, z);
-  
-  //mesh.geometry.computeBoundingSphere();
-  //mesh.geometry.attributes.position.array
-  
-  }
+radialSegments  }
   //mesh.geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-  // console.log(vertices)
-  scene.add(mesh);
-
-
-  (function () {
- 
-
- 
-    // GEOMETRY - starting with a cube
-    var geometry = new THREE.BoxGeometry(1, 1, 1);
- 
-    // check out the position attribute of a cube
-    var position = geometry.getAttribute('position');
-    console.log( position.count ); // 24
-    console.log( position.array.length ); // 72
-    console.log( position.count * 3 === position.array.length); // true
-    var index = geometry.getIndex();
-    console.log( index.count );      // 36
-    console.log( 2 * 6 );            // 12 ( number of triangles )
-    console.log( index.count / 3);   /* 12 (index.count / 3 === number of triangles ) */
- 
-    // mutating a position
-    var vertIndex = index.array[0] * 3;
-    position.array[vertIndex] = 1;
-    position.needsUpdate = true;
- 
-    
-    // use the geometry with a mesh
-    var mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial({
-        side: THREE.DoubleSide
-    }));
-    scene.add(mesh);
-
- 
- 
-}
-    ());
-
+  //console.log(mesh)
 animate(0);
 function animate(dt) {
   requestAnimationFrame( animate ); 

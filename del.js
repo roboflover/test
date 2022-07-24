@@ -32,11 +32,10 @@ CustomSinCurve.prototype.getPoint = function ( t ) {
 
 var tubularSegments = 200;
 var path = new CustomSinCurve( 10 );
-var geometry = new THREE.TubeBufferGeometry( path, tubularSegments, 2, 32, false );
+var geometry = new THREE.TubeBufferGeometry( 1.0, tubularSegments, 2, 32, false );
 var material = new THREE.MeshNormalMaterial( { side: THREE.DoubleSide } );
 var mesh = new THREE.Mesh( geometry, material );
 scene.add( mesh );
-
 
 var normal = new THREE.Vector3();
 var vertex = new THREE.Vector3();
@@ -86,8 +85,8 @@ function generateSegment( i ) {
       normal.applyAxisAngle(geometry.tangents[ i ], pointAt * Math.PI * 2); // twisting
 			
       vertex.x = P.x + radius * normal.x;
-	  vertex.y = P.y + radius * normal.y;
-	  vertex.z = P.z + radius * normal.z;
+	    vertex.y = P.y + radius * normal.y;
+	    vertex.z = P.z + radius * normal.z;
       
       
 
