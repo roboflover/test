@@ -84,16 +84,67 @@ function init() {
 // const geometry = new THREE.BufferGeometry().setFromPoints(stipe_points);
 // console.log(geometry);
 
-const points = []
-points.push(new THREE.Vector3(-5, 0, 0))
-points.push(new THREE.Vector3(-10, 0, 0))
-let geometry = new THREE.BufferGeometry().setFromPoints( points )
-let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x888888 }))
-scene.add(line)
+// const points = []
+// points.push(new THREE.Vector3(-5, 0, 0))
+// points.push(new THREE.Vector3(-10, 0, 0))
+// let geometry = new THREE.BufferGeometry().setFromPoints( points )
+// let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x888888 }))
+// scene.add(line)
 
-// var dotMaterial = new THREE.PointsMaterial( { size: 3, sizeAttenuation: false } );
-// var dot = new THREE.Points( geometry, dotMaterial );
-// scene.add( dot );
+class CustomSinCurve extends THREE.Curve {
+
+	constructor( scale = 1 ) {
+
+		super();
+
+		this.scale = scale;
+
+	}
+
+	getPoint( t, optionalTarget = new THREE.Vector3() ) {
+
+		const tx = t * 3 - 1.5;
+		const ty = Math.sin( 2 * Math.PI * t );
+		const tz = 0;
+
+		return optionalTarget.set( tx, ty, tz ).multiplyScalar( this.scale );
+
+	}
+
+}
+const repeat = 8;
+function myTaper( u ) {
+    return 0.5 + 0.5 * Math.sin( u * repeat * Math.PI * 2 );
+}
+const taper = myTaper( 1 )
+const path = new CustomSinCurve( 1 );
+const geometry = new THREE.TubeBufferGeometry( path, 20, .1, 16, false, 0.5/0 );
+const material = new THREE.MeshBasicMaterial( { color: 0x00ff00, side: THREE.DoubleSide } );
+const mesh = new THREE.Mesh( geometry, material );
+scene.add( mesh );
+
+// // Create vertex data for multiple lines
+// var p1 = new THREE.Vector3(-85.35, -35.36)
+// var p2 = new THREE.Vector3(-50, 0, 0);
+// var p3 = new THREE.Vector3(0, 50, 0);
+// var p4 = new THREE.Vector3(50, 0, 0);
+// var p5 = new THREE.Vector3(85.35, -35.36);
+// // Create line 1: straight line
+// let line1 = new THREE.LineCurve3(p1,p2);
+// // Reconstruct line 2: 3D spline curve
+// var curve = new THREE.CatmullRomCurve3([p2, p3, p4]);
+// // Create line 3: straight line
+// let line2 = new THREE.LineCurve3(p4,p5);
+// var CurvePath = new THREE.CurvePath();// Create CurvePath object
+// CurvePath.curves.push(line1, curve, line2);// Insert multiple lines
+// // Create a generation pipeline through a multi-segment curve path
+// // Create a pipeline through a multi-segment curve path, CCurvePath: pipeline path
+// var geometry2 = new THREE.TubeGeometry(CurvePath, 100, .5, 5, false);
+// const mesh2 = new THREE.Mesh( geometry2, material );
+// scene.add( mesh2 );
+// // var dotMaterial = new THREE.PointsMaterial( { size: 3, sizeAttenuation: false } );
+// // var dot = new THREE.Points( geometry, dotMaterial );
+// // scene.add( dot );
 
 animate(0);
 function animate(dt) {
