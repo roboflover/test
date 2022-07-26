@@ -3,7 +3,7 @@ let shroom_height, stipe_vSegments, stipe_rSegments, stipe_points, stipe_indices
 let circleValues;
 const mouse = new THREE.Vector2();
 let INTERSECTED;
-let theta = 0;
+//let theta = 0;
 let meshOk = false;
 let group2 = new THREE.Object3D();
 let cloneGroup;
@@ -103,8 +103,16 @@ const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true 
 const mesh = new THREE.Mesh(geometry, material);
 let scaleTube = 0.2;
 mesh.scale.set(scaleTube, scaleTube, scaleTube);
+let point = new THREE.Vector3(0.0, 0.0, 0.0);
+let axis = new THREE.Vector3(0.0, 0.0, 1.0);
+let theta = Math.PI / 0.5
+mesh.position.sub(point); // remove the offset
+mesh.position.applyAxisAngle(axis, theta); // rotate the POSITION
+mesh.position.add(point); // re-add the offset
 //mesh.getCenter(1.0,1.0,1.0)
-mesh.rotation.z = Math.PI / 2
+mesh.position.x = - 0.8
+mesh.position.y = - 0.5
+mesh.rotation.z = 0.0//Math.PI / 0.2
 
 var normal = new THREE.Vector3();
 var vertex = new THREE.Vector3();
@@ -155,7 +163,7 @@ for ( i = 0; i <= tubularSegments; i ++ ) {
 //console.log(vertices)
 //console.log(geometry.tangents);
 
-geometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(vertices), 3));
+geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(vertices), 3));
 scene.add(mesh)
 
 // function rotateMesh(angleNumber, mesh){

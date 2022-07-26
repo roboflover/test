@@ -1,0 +1,163 @@
+<script
+  async
+  src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"
+></script>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three/build/three.module.js"
+    }
+  }
+</script>
+
+<script type="module">
+  // Simple three.js example
+
+  import * as THREE from 'three';
+  import { OrbitControls } from 'https://unpkg.com/three/examples/jsm/controls/OrbitControls.js';
+
+  var axisMesh,
+    axisAngle,
+    oldAxisAngle,
+    rotAxis,
+    red,
+    blue,
+    renderer,
+    scene,
+    camera,
+    controls;
+
+  init();
+  animate();
+
+  function init() {
+    // renderer
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    document.body.appendChild(renderer.domElement);
+
+    // scene
+    scene = new THREE.Scene();
+
+    // camera
+    camera = new THREE.PerspectiveCamera(
+      40,
+      window.innerWidth / window.innerHeight,
+      1,
+      10000
+    );
+    camera.position.set(20, 20, 20);
+
+    // controls
+    controls = new OrbitControls(camera, renderer.domElement);
+
+    // ambient
+    scene.add(new THREE.AmbientLight(0x222222));
+
+    // light
+    var light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(20, 20, 0);
+    scene.add(light);
+
+    // axes
+    scene.add(new THREE.AxesHelper(20));
+
+    // geometry
+    var geo1 = new THREE.BoxGeometry(5, 1, 1);
+
+    // material
+    var mat1 = new THREE.MeshPhongMaterial({
+      color: 0xff0000,
+      flatShading: true,
+      transparent: true,
+      opacity: 0.7,
+    });
+    var mat2 = new THREE.MeshPhongMaterial({
+      color: 0x0000ff,
+      flatShading: true,
+      transparent: true,
+      opacity: 0.7,
+    });
+
+    var axisGeo = new THREE.BoxGeometry(0.2, 0.2, 30);
+    var axisMat = new THREE.MeshPhongMaterial({
+      color: 0xffff00,
+      flatShading: true,
+      transparent: true,
+      opacity: 0.7,
+    });
+
+    // mesh
+    red = new THREE.Mesh(geo1, mat1);
+    blue = new THREE.Mesh(geo1, mat2);
+
+    axisMesh = new THREE.Mesh(axisGeo, axisMat);
+
+    //blue.position.set(10, 0, 0)
+    scene.add(red, blue); //, axisMesh );
+
+    axisAngle = new THREE.Vector4().setAxisAngleFromQuaternion(red.quaternion);
+    oldAxisAngle = axisAngle.clone();
+    rotAxis = new THREE.Vector3().set(axisAngle.x, axisAngle.y, axisAngle.z);
+
+    axisMesh.lookAt(rotAxis);
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    //controls.update();
+
+    // Extracting the rotation axis and the angle from quaternion and storing it into a Vector4...
+    // axisAngle.setAxisAngleFromQuaternion(red.quaternion);
+    // Setting the axis values to a Vector3
+    //   rotAxis.set(axisAngle.x, axisAngle.y, axisAngle.z);
+
+    // Updating the yellow stick (axis representation)
+    // axisMesh.lookAt(rotAxis);
+
+    // The difference between the old angle value and the current one.
+    // var theta = axisAngle.w - oldAxisAngle.w;
+    // Rotates the blue object around the red pivot point with the axis and angle found
+    // rotateAboutPoint(blue, red.position, rotAxis, theta);
+
+    // Updating the old Vector4
+    //  oldAxisAngle = axisAngle.clone();
+
+    red.rotation.y += 0.01;
+    red.rotation.z += 0.02;
+
+    blue.quaternion.copy(red.quaternion);
+    blue.position.set(0, 0, 0);
+    blue.translateX(10);
+
+    renderer.render(scene, camera);
+  }
+
+  /**
+   * @param obj - your object (THREE.Object3D or derived)
+   * @param point - the point of rotation (THREE.Vector3)
+   * @param axis - the axis of rotation (normalized THREE.Vector3)
+   * @param theta - radian value of rotation
+   * @param pointIsWorld - boolean indicating the point is in world coordinates (default = false)
+   */
+  function rotateAboutPoint(obj, point, axis, theta, pointIsWorld) {
+    pointIsWorld = pointIsWorld === undefined ? false : pointIsWorld;
+
+    if (pointIsWorld) {
+      obj.parent.localToWorld(obj.position); // compensate for world coordinate
+    }
+
+    obj.position.sub(point); // remove the offset
+    obj.position.applyAxisAngle(axis, theta); // rotate the POSITION
+    obj.position.add(point); // re-add the offset
+
+    if (pointIsWorld) {
+      obj.parent.worldToLocal(obj.position); // undo world coordinates compensation
+    }
+
+    obj.rotateOnAxis(axis, theta); // rotate the OBJECT
+  }
+</script>
