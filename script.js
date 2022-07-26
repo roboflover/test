@@ -57,7 +57,7 @@ function init() {
   stats = new Stats();
 	document.body.appendChild( stats.dom );
   document.addEventListener( 'mousemove', onDocumentMouseMove );
-  //scene.add( axesHelper );
+  scene.add( axesHelper );
   // const gui = new g();
   // gui.add( effectController, 'count', 1, 135, 1 );
   // gui.add( effectController, 'fstop', 1.8, 22, 0.01 );
@@ -85,7 +85,7 @@ class CustomSinCurve extends THREE.Curve {
   }
 
   getPoint(t, optionalTarget = new THREE.Vector3()) {
-    const tx = t * 5 - 1.5;
+    const tx = t * 2 - 1.5;
     const ty = Math.sin(1 * Math.PI * t);
     const tz = 0;
     return optionalTarget.set(tx, ty, tz).multiplyScalar(this.scale);
@@ -99,7 +99,6 @@ const tubularSegments = 20;
 const tubeRadius = 2;
 const path = new CustomSinCurve(10);
 const geometry = new THREE.TubeBufferGeometry(path, tubularSegments, tubeRadius, radialSegments, false);
-const geometry2 = new THREE.TubeBufferGeometry(path, tubularSegments, tubeRadius, radialSegments, false);
 
 const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 const mesh = new THREE.Mesh(geometry, material);
@@ -141,7 +140,7 @@ for ( i = 0; i <= tubularSegments; i ++ ) {
     //radius += Math.abs(Math.sin(v * 2.5)); // radial half-waves
     //radius += Math.sin(pointAt * Math.PI * 4 - 1.2); // wave along the path
 
-    radius += Math.sin(pointAt * 5 - 1.2); // wave along the path
+    radius = radius + ((Math.sin(pointAt * 40 - 1.5)*0.9 ) + Math.sin(pointAt * 3 + 2)); // wave along the path
 
     ns = Noise.noise(vertex.x * nScale, vertex.y * nScale, j);
     
@@ -157,39 +156,37 @@ for ( i = 0; i <= tubularSegments; i ++ ) {
 //console.log(geometry.tangents);
 
 geometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(vertices), 3));
+scene.add(mesh)
 
-function rotateMesh(angleNumber, mesh){
-  
-  if(!meshOk){
-    meshOk = true;
-    let xPosOffset = 3.0
-    for(let i = 0; i < angleNumber; i++){
-      let group = new THREE.Object3D();
-      var newMesh = mesh.clone();
-      newMesh.position.x = xPosOffset
-      group.add(newMesh)
-      let angleZ = Math.PI / (angleNumber);
-      console.log(angleZ)
-      group.rotation.z = (angleZ * i)*2;
-      group2.add(group)
-      countMemory = angleNumber
-    }
-    scene.add(group2)
-  }
-}
-rotateMesh(effectController.count, mesh)
-cloneGroup = group2.clone()
-cloneGroup.rotation.x = Math.PI
-scene.add(cloneGroup)
+// function rotateMesh(angleNumber, mesh){
+//   if(!meshOk){
+//     meshOk = true;
+//     let xPosOffset = 3.0
+//     for(let i = 0; i < angleNumber; i++){
+//       let group = new THREE.Object3D();
+//       var newMesh = mesh.clone();
+//       newMesh.position.x = xPosOffset
+//       group.add(newMesh)
+//       let angleZ = Math.PI / (angleNumber);
+//       console.log(angleZ)
+//       group.rotation.z = (angleZ * i)*2;
+//       group2.add(group)
+//       countMemory = angleNumber
+//     }
+//     scene.add(group2)
+//   }
+// }
+//rotateMesh(effectController.count, mesh)
+// cloneGroup = group2.clone()
+// cloneGroup.rotation.x = Math.PI
+// scene.add(cloneGroup)
 // var newQueen = mesh.clone();
 // newQueen.position.x = xPosOffset;
 // mesh.position.x = xPosOffset;
 // scene.add(group)
 // group.add(newQueen)
 // group.rotation.z = 1.5;
-
 //group.add(mesh);
-
 
 let lengthX = mesh.geometry.attributes.position.array.length
 for(let i = 0; i < lengthX; i++){
@@ -199,8 +196,7 @@ for(let i = 0; i < lengthX; i++){
     mesh.geometry.attributes.position.array[i + 1] * nScale, 
     t);
 radialSegments  }
-  //mesh.geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-  //console.log(mesh)
+
 animate(0);
 function animate(dt) {
   requestAnimationFrame( animate ); 
@@ -212,7 +208,7 @@ raycaster.setFromCamera( mouse, camera );
 
 const intersects = raycaster.intersectObjects( scene.children, false );
 group2.rotation.z +=  effectController.speed 
-cloneGroup.rotation.z +=  effectController.speed
+//cloneGroup.rotation.z +=  effectController.speed
 //rotateMesh(effectController.count, mesh)
 
 
