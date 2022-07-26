@@ -71,7 +71,6 @@ init();
 function onDocumentMouseMove( event ) {
 
   event.preventDefault();
-
   mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
   mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
@@ -104,7 +103,8 @@ const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true 
 const mesh = new THREE.Mesh(geometry, material);
 let scaleTube = 0.2;
 mesh.scale.set(scaleTube, scaleTube, scaleTube);
-
+//mesh.getCenter(1.0,1.0,1.0)
+mesh.rotation.z = Math.PI / 2
 
 var normal = new THREE.Vector3();
 var vertex = new THREE.Vector3();
