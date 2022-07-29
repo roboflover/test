@@ -120,6 +120,11 @@ for(let i = 0; i < enemiesCount; i++){
   let structure = new THREE.Group()
   let blade01 = new THREE.Object3D()
   let blade02 = new THREE.Object3D()
+  //let offset = -4.0
+  blade01.rotation.z = Math.PI / 2
+  bla
+  //blade01.position.x = -offset
+  //blade02.position.x = offset
   structure.add(blade01)
   structure.add(blade02)
   enemies.push(structure)
@@ -140,10 +145,8 @@ enemies.forEach((enemy, enemyIndex)=>{
   let rotX = new THREE.Group()
   enemy.position.set(Math.random()*20, Math.random()*20, 0)
   enemy.scale.set(scale, scale, scale) 
-  enemy.children[1].rotation.z = Math.PI / 1
+  //enemy.children[1].rotation.z = Math.PI / 2
   enemy.updateMatrixWorld(true)
-  enemy.children[0].updateMatrix(true)
-  enemy.children[1].updateMatrix(true)
   iBlade01.setMatrixAt(enemyIndex, enemy.children[0].matrixWorld)
   iBlade02.setMatrixAt(enemyIndex, enemy.children[1].matrixWorld)
 })
