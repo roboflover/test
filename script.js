@@ -13,34 +13,7 @@ const uniforms = {
     time: { type: "f", value: 0 },
     resolution: { type: "v4", value: new THREE.Vector4() },
   };
-  const effectController = {
 
-    count: 5,
-    speed: .03,
-    // jsDepthCalculation: true,
-    // shaderFocus: false,
-    //
-    fstop: 2.8,
-    // maxblur: 1.0,
-    //
-    delete: false,
-    focalDepth: 3,
-    manualdof: false,
-    vignetting: false,
-    // depthblur: false,
-    //
-    // threshold: 0.5,
-    // gain: 2.0,
-    // bias: 0.5,
-    // fringe: 0.7,
-    //
-    // focalLength: 35,
-    // noise: true,
-    // pentagon: false,
-    //
-    // dithering: 0.0001
-
-  };
 
 function init() {
   scene = new THREE.Scene();
@@ -58,12 +31,6 @@ function init() {
 	document.body.appendChild( stats.dom );
   document.addEventListener( 'mousemove', onDocumentMouseMove );
   scene.add( axesHelper );
-  // const gui = new g();
-  // gui.add( effectController, 'count', 1, 135, 1 );
-  // gui.add( effectController, 'fstop', 1.8, 22, 0.01 );
-  // gui.add( effectController, 'focalDepth', 0.1, 100, 0.001 );
-  // gui.add( effectController, 'delete', true );
-  raycaster = new THREE.Raycaster();
 }
 
 init();
@@ -82,15 +49,12 @@ class CustomSinCurve extends THREE.Curve {
     super();
     this.scale = scale;
   }
-
   getPoint(t, optionalTarget = new THREE.Vector3()) {
     const tx = t * 2 - 1.5;
     const ty = Math.sin(1 * Math.PI * t);
     const tz = 0;
     return optionalTarget.set(tx, ty, tz).multiplyScalar(this.scale);
-
   }
-
 }
 
 const radialSegments = 32;
@@ -103,23 +67,11 @@ const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true 
 const mesh = new THREE.Mesh(geometry, material);
 let scaleTube = 0.2;
 mesh.scale.set(scaleTube, scaleTube, scaleTube);
-//mesh.getCenter(1.0,1.0,1.0)
-mesh.rotation.z = Math.PI / 2
-var center = new THREE.Vector3(0.0, 0.0, 0.0); 
-mesh.geometry.computeBoundingBox()
-let aaa = mesh.geometry.boundingBox.getCenter(center)
-mesh.localToWorld( center );
-console.log(aaa)
-function getCenterPoint(mesh) { 
-  var geometry = mesh.geometry; 
-  geometry.computeBoundingBox(); 
-  var center = new THREE.Vector3(); 
-  geometry.boundingBox.getCenter( center ); 
-  mesh.localToWorld( center ); 
-  return center; 
-}
-//let sss = getCenterPoint(mesh)
-//console.log(sss)
+
+var v = new THREE.Vector3(0, 1, 0);
+let degree = 40.91
+mesh.position.applyAxisAngle(v, Math.PI /2)
+
 var normal = new THREE.Vector3();
 var vertex = new THREE.Vector3();
 var P = new THREE.Vector3();
@@ -146,13 +98,8 @@ for ( i = 0; i <= tubularSegments; i ++ ) {
     normal.x = ( cos * N.x + sin * B.x );
     normal.y = ( cos * N.y + sin * B.y );
     normal.z = ( cos * N.z + sin * B.z )
-    // normal.x = ( N.x + B.x);
-    // normal.y = ( N.y + B.y);
-    // normal.z = ( N.z + B.z)
     normal.normalize(); 
     var radius = geometry.parameters.radius;
-    //radius += Math.abs(Math.sin(v * 2.5)); // radial half-waves
-    //radius += Math.sin(pointAt * Math.PI * 4 - 1.2); // wave along the path
 
     radius = radius + ((Math.sin(pointAt * 40 - 1.5)*0.9 ) + Math.sin(pointAt * 3 + 2)); // wave along the path
 
@@ -164,43 +111,12 @@ for ( i = 0; i <= tubularSegments; i ++ ) {
     //console.log(vertex)
 		vertices.push( vertex.x, vertex.y, vertex.z );
   }
-  //normal.applyAxisAngle(geometry.tangents[ i ], pointAt * Math.PI * 2); // twisting
+
 }
-//console.log(vertices)
-//console.log(geometry.tangents);
 
-geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(vertices), 3));
-scene.add(mesh)
+mesh.geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(vertices), 3));
+//scene.add(mesh)
 
-// function rotateMesh(angleNumber, mesh){
-//   if(!meshOk){
-//     meshOk = true;
-//     let xPosOffset = 3.0
-//     for(let i = 0; i < angleNumber; i++){
-//       let group = new THREE.Object3D();
-//       var newMesh = mesh.clone();
-//       newMesh.position.x = xPosOffset
-//       group.add(newMesh)
-//       let angleZ = Math.PI / (angleNumber);
-//       console.log(angleZ)
-//       group.rotation.z = (angleZ * i)*2;
-//       group2.add(group)
-//       countMemory = angleNumber
-//     }
-//     scene.add(group2)
-//   }
-// }
-//rotateMesh(effectController.count, mesh)
-// cloneGroup = group2.clone()
-// cloneGroup.rotation.x = Math.PI
-// scene.add(cloneGroup)
-// var newQueen = mesh.clone();
-// newQueen.position.x = xPosOffset;
-// mesh.position.x = xPosOffset;
-// scene.add(group)
-// group.add(newQueen)
-// group.rotation.z = 1.5;
-//group.add(mesh);
 
 let lengthX = mesh.geometry.attributes.position.array.length
 for(let i = 0; i < lengthX; i++){
@@ -211,39 +127,38 @@ for(let i = 0; i < lengthX; i++){
     t);
 radialSegments  }
 
+let enemiesCount = 10;
+let enemies = []
+for(let i = 0; i < enemiesCount; i++){
+  let structure = new THREE.Group();
+  let blade01 = new THREE.Object3D();
+  let blade02 = new THREE.Object3D();
+  structure.add(blade01);
+  structure.add(blade02);
+  enemies.push(structure);
+}
+
+let iBlade01 = new THREE.InstancedMesh(geometry, material, enemiesCount);
+let iBlade02 = new THREE.InstancedMesh(geometry, material, enemiesCount);
+//iBlade02.position.x = 2
+scene.add(iBlade01)
+scene.add(iBlade02)
+let scale = 0.1
+enemies.forEach((enemy, enemyIndex)=>{
+  enemy.position.set(Math.random()*20, Math.random()*20, 0);
+  enemy.scale.set(scale, scale, scale);
+  enemy.children[1].rotation.z = Math.PI / 1
+  enemy.updateMatrixWorld(true);
+  iBlade01.setMatrixAt(enemyIndex, enemy.children[0].matrixWorld);
+  iBlade02.setMatrixAt(enemyIndex, enemy.children[1].matrixWorld);
+})
+iBlade01.instanceMatrix.needsUpdate;
+iBlade02.instanceMatrix.needsUpdate;
+
 animate(0);
 function animate(dt) {
   requestAnimationFrame( animate ); 
   dt = dt * 0.001;
-
-// find intersections
-
-raycaster.setFromCamera( mouse, camera );
-
-const intersects = raycaster.intersectObjects( scene.children, false );
-group2.rotation.z +=  effectController.speed 
-//cloneGroup.rotation.z +=  effectController.speed
-//rotateMesh(effectController.count, mesh)
-
-
-
-
-//
-
-// if ( camera.postprocessing.enabled ) {
-
-//   camera.renderCinematic( scene, renderer );
-
-// } else {
-
-//   scene.overrideMaterial = null;
-
-//   renderer.clear();
-//   renderer.render( scene, camera );
-
-// }
-
-
   stats.update();
 	renderer.render( scene, camera );
 }
