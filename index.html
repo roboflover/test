@@ -1,84 +1,48 @@
 <body bgcolor="#000000">
   <div id="world"></div>
+  <script type="x-shader/x-vertex" id="vertexShader">
 
-  <script id="fragmentShader" type="x-shader/x-fragment">
+    attribute float size;
+    attribute vec4 ca;
 
-    varying vec3 vPosition;
-        varying vec4 vColor;
-
-        uniform vec2 resolution;
-        uniform float time;
-
-        void main(){
-          gl_FragColor = vec4(1., 1., 1., 1.);
-    }
-  </script>
-
-  <script id="vertexShaderLV" type="x-shader/x-vertex">
-
-    uniform float time;
-
-    void main() {
-
-    vec3 newPos = position;
-    newPos.x += cos(time + position.y * 0.5);
-    vec4 mvPosition = modelViewMatrix * vec4(newPos, 1.0);
-    gl_Position = projectionMatrix * mvPosition;
-
-    }
-  </script>
-
-  <script id="vertexShaderLH" type="x-shader/x-vertex">
-
-    uniform float time;
-
-    void main() {
-
-    vec3 newPos = position;
-    newPos.z += sin(time + position.x * 0.5);
-    vec4 mvPosition = modelViewMatrix * vec4(newPos, 1.0);
-    gl_Position = projectionMatrix * mvPosition;
-
-    }
-  </script>
-
-  <script id="vertexShaderP" type="x-shader/x-vertex">
-
-    varying vec2 vUv;
-    varying vec3 vPosition;
     varying vec4 vColor;
-    uniform float time;
 
     void main() {
 
-    vec3 newPos = position;
-    newPos.z += sin(time + position.x * 0.5);
+      vColor = ca;
 
-    vec4 mvPosition = modelViewMatrix * vec4(newPos, 1.0);
-    gl_PointSize = 10. * (1. / - mvPosition.z) + 8.;
+      vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
 
-    gl_Position = projectionMatrix * mvPosition;
+      gl_PointSize = size * ( 150.0 / -mvPosition.z );
+
+      gl_Position = projectionMatrix * mvPosition;
 
     }
   </script>
 
-  <script id="fragmentShaderP" type="x-shader/x-fragment">
+  <script type="x-shader/x-fragment" id="fragmentShader">
 
-    varying vec3 vPosition;
-        varying vec2 vUv;
-        varying vec4 vColor;
+    uniform vec3 color;
+    uniform sampler2D pointTexture;
 
-        uniform vec2 resolution;
-        uniform float time;
+    varying vec4 vColor;
 
-        void main(){
-          float radius = .005;
-          float dist = length(gl_PointCoord - vec2(0.5));
-          float alpha = 1. - smoothstep(0.45, 0.5, dist);
-          gl_FragColor = vec4(1., 1., 1., alpha);
+    void main() {
+
+      vec4 outColor = texture2D( pointTexture, gl_PointCoord );
+
+      if ( outColor.a < 0.5 ) discard;
+
+      gl_FragColor = outColor * vec4( color * vColor.xyz, 1.0 );
+
+      float depth = gl_FragCoord.z / gl_FragCoord.w;
+      const vec3 fogColor = vec3( 0.0 );
+
+      float fogFactor = smoothstep( 200.0, 600.0, depth );
+      gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );
+
     }
   </script>
-
   <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
   <!--<script src="./OrbitControls.js"></script>-->
   <script src="./lib/three/examples/jsm/math/ImprovedNoise.js"></script>

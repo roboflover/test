@@ -104,8 +104,8 @@ for ( i = 0; i <= tubularSegments; i ++ ) {
 }
 
 mesh.geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(vertices), 3))
-
 let lengthX = mesh.geometry.attributes.position.array.length
+
 for(let i = 0; i < lengthX; i++){
   let t = Math.random()*10
   ns = Noise.noise(
@@ -113,45 +113,23 @@ for(let i = 0; i < lengthX; i++){
     mesh.geometry.attributes.position.array[i + 1] * nScale, 
     t);
 radialSegments  }
-let enemiesCount = 10
-let enemies = []
 
-for(let i = 0; i < enemiesCount; i++){
-  let structure = new THREE.Group()
-  let blade01 = new THREE.Object3D()
-  let blade02 = new THREE.Object3D()
-  //let offset = -4.0
-  blade01.rotation.z = Math.PI / 2
-  bla
-  //blade01.position.x = -offset
-  //blade02.position.x = offset
-  structure.add(blade01)
-  structure.add(blade02)
-  enemies.push(structure)
+let mandala = new THREE.Group()
+
+function addMandala(count){
+  mesh.position.x = -1
+  for(let i = 0; i < count; i++){
+    let meshB = mesh.clone()
+    let groupCenter = new THREE.Group()
+    groupCenter.add( meshB )
+    groupCenter.rotation.z = ((Math.PI/count)*2) * i
+    mandala.add( groupCenter )
+  }
 }
 
-let iBlade01 = new THREE.InstancedMesh(geometry, material, enemiesCount)
-let iBlade02 = new THREE.InstancedMesh(geometry, material, enemiesCount)
-let scaleB = -10
-let scale = 0.1
-iBlade01.position.x = scaleB
-iBlade01.position.y = scaleB
-iBlade02.position.x = scaleB
-iBlade02.position.y = scaleB
-scene.add(iBlade01)
-scene.add(iBlade02)
+addMandala(3)
+scene.add(mandala)
 
-enemies.forEach((enemy, enemyIndex)=>{
-  let rotX = new THREE.Group()
-  enemy.position.set(Math.random()*20, Math.random()*20, 0)
-  enemy.scale.set(scale, scale, scale) 
-  //enemy.children[1].rotation.z = Math.PI / 2
-  enemy.updateMatrixWorld(true)
-  iBlade01.setMatrixAt(enemyIndex, enemy.children[0].matrixWorld)
-  iBlade02.setMatrixAt(enemyIndex, enemy.children[1].matrixWorld)
-})
-iBlade01.instanceMatrix.needsUpdate
-iBlade02.instanceMatrix.needsUpdate
 
 animate(0)
 function animate(dt) {
